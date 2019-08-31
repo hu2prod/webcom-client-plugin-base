@@ -66,10 +66,11 @@ if window.config_hot_reload
           url = url_parser(img.src)
           src = url.pathname
           src = src.replace /^\//, ''
+          data.path = data.path.replace /^\//, ''
           if src == data.path # TOO bad compare
             if url.protocol # full
               img.src = "#{url.protocol}//#{url.host}#{url.pathname}?cache_killer=#{image_uid++}"
             else # simple
-              img.src = "#{src}?cache_killer=#{image_uid++}"
+              img.src = "#{url.pathname}?cache_killer=#{image_uid++}"
         
     return
