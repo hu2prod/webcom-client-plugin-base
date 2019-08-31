@@ -31,7 +31,7 @@ if window.config_hot_reload
   window.hot_reload_websocket = new window.Websocket_wrap "#{protocol}//#{location.hostname}:#{config_hot_reload_port}#{location.pathname}"
   window.hot_reload_websocket.on "data", window.hot_reload_handler = (data)->
     return if !autoreload
-    if data.event == 'add'
+    if data.event == 'add' and data.switch != "hotreload_image"
       location.reload()
     
     switch data.switch
