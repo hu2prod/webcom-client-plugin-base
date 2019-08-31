@@ -2,7 +2,7 @@ require 'fy/codegen'
 {
   master_registry
   Webcom_plugin
-} = require 'webcom-server-delivery/lib/client_configurator'
+} = require 'webcom/lib/client_configurator'
 require './fy'
 fs = require 'fs'
 
