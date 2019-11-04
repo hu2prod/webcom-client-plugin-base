@@ -85,7 +85,8 @@ window.db_mixin = (athis, collection)->
     loop
       await @serialize defer(err, json)     ; break if err
       await collection.save json, defer(err, id_update); break if err
-        
+      if _id = id_update?.insertedIds?[0]
+        @_id = _id
       break
     for cb in @_save_cb_list
       try
