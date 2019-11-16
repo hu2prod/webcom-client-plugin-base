@@ -19,7 +19,7 @@ window.broadcast_register = (ws)->
 #    experimental db_mixin
 # ###################################################################################################
 react_deep_clone = (t)->
-  return t if typeof t != 'object'
+  return t if !t? or typeof t != 'object'
   if Array.isArray t
     res = []
     for v in t
@@ -106,7 +106,7 @@ window.db_mixin = (athis, collection)->
       continue if k[0] == '$' # $event_hash + react stuff
       continue if typeof v == 'function'
       if typeof v == 'object'
-        continue unless v.$undefined?
+        continue unless v?.$undefined?
       ret[k] = v
     
     for k,dbmap_hint of @_dbmap or {}
