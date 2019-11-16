@@ -19,7 +19,7 @@ window.broadcast_register = (ws)->
 #    experimental db_mixin
 # ###################################################################################################
 react_deep_clone = (t)->
-  return t if t != Object(t)
+  return t if typeof t != 'object'
   if Array.isArray t
     res = []
     for v in t
@@ -28,7 +28,8 @@ react_deep_clone = (t)->
   
   res = {}
   for k,v of t
-    continue if k[0] == '$' # FUCK
+    unless k == '$undefined'
+      continue if k[0] == '$' # react stuff
     continue if typeof v == 'function'
     res[k] = react_deep_clone v
   res
@@ -85,6 +86,7 @@ window.db_mixin = (athis, collection)->
     loop
       await @serialize defer(err, json)     ; break if err
       await collection.save json, defer(err, id_update); break if err
+      @dispatch "save", @
       if _id = id_update?.insertedIds?[0]
         @_id = _id
       break
@@ -101,9 +103,10 @@ window.db_mixin = (athis, collection)->
     ret = {_id:@_id} if @_id # т.к. он будет пропущен условием пропуска _
     for k,v of @
       continue if k[0] == '_' # skip _dbmap, _load_cb_list, _save_cb_list
-      continue if k[0] == '$' # Я думал, только angular писали срущие в пользовательские объекты люди... но React решил не отставать
+      continue if k[0] == '$' # $event_hash + react stuff
       continue if typeof v == 'function'
-      continue if typeof v == 'object'
+      if typeof v == 'object'
+        continue unless v.$undefined?
       ret[k] = v
     
     for k,dbmap_hint of @_dbmap or {}
