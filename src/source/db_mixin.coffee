@@ -4,10 +4,10 @@
 # ###################################################################################################
 window.broadcast_register = (ws)->
   ws.__broadcast_factory_hash = {}
-  ws.on 'data', (data)->
-    return if data.switch != 'webnative_broadcast'
+  ws.on "data", (data)->
+    return if data.switch != "webnative_broadcast"
     return if !entity_blueprint = ws.__broadcast_factory_hash[data.collection]
-    puts 'webnative_broadcast', data
+    puts "webnative_broadcast", data
     if val = entity_blueprint.ref_id_hash[data._id]
       if val._load_cb_list.length == 0
         if data.data?
@@ -19,7 +19,7 @@ window.broadcast_register = (ws)->
 #    experimental db_mixin
 # ###################################################################################################
 react_deep_clone = (t)->
-  return t if !t? or typeof t != 'object'
+  return t if !t? or typeof t != "object"
   if Array.isArray t
     res = []
     for v in t
@@ -28,9 +28,9 @@ react_deep_clone = (t)->
   
   res = {}
   for k,v of t
-    unless k == '$undefined'
-      continue if k[0] == '$' # react stuff
-    continue if typeof v == 'function'
+    unless k == "$undefined"
+      continue if k[0] == "$" # react stuff
+    continue if typeof v == "function"
     res[k] = react_deep_clone v
   res
 window.db_mixin = (athis, collection)->
@@ -102,18 +102,18 @@ window.db_mixin = (athis, collection)->
     ret = {}
     ret = {_id:@_id} if @_id # т.к. он будет пропущен условием пропуска _
     for k,v of @
-      continue if k[0] == '_' # skip _dbmap, _load_cb_list, _save_cb_list
-      continue if k[0] == '$' # $event_hash + react stuff
-      continue if typeof v == 'function'
-      if typeof v == 'object'
+      continue if k[0] == "_" # skip _dbmap, _load_cb_list, _save_cb_list
+      continue if k[0] == "$" # $event_hash + react stuff
+      continue if typeof v == "function"
+      if typeof v == "object"
         continue unless v?.$undefined?
       ret[k] = v
     
     for k,dbmap_hint of @_dbmap or {}
       switch dbmap_hint.type
-        when 'clone'
+        when "clone"
           ret[k] = react_deep_clone @[k]
-        when 'ref', 'ref_force'
+        when "ref", "ref_force"
           if @[k]
             if !@[k]._id?
               await @[k].save defer err; return on_end err if err
@@ -121,9 +121,9 @@ window.db_mixin = (athis, collection)->
           else
             id = @["_#{k}_oid"]
           set_k = k
-          set_k += '_oid' if !/_oid$/.test set_k
+          set_k += "_oid" if !/_oid$/.test set_k
           ret[k] = id
-        when 'ref_list'
+        when "ref_list"
           ref_list = []
           for v in @[k]
             if !v._id?
@@ -149,17 +149,17 @@ window.db_mixin = (athis, collection)->
     for k,v of json
       if dbmap_hint = @_dbmap[k]
         switch dbmap_hint.type
-          when 'clone'
+          when "clone"
             @[k] = v
-          when 'ref'
+          when "ref"
             @["_#{k}_oid"] = v
-          when 'ref_force'
+          when "ref_force"
             @["_#{k}_oid"] = v
             await @load_ref k, defer err; return on_end err if err
-          when 'ref_list'
-            @[k] = v
+          when "ref_list"
+            await @load_ref_list k, v, defer err; return on_end err if err
       else
-        continue if typeof @[k] == 'function' # prevent breaking self
+        continue if typeof @[k] == "function" # prevent breaking self
         # TODO protect this
         # _load_cb_list
         # _save_cb_list
@@ -175,7 +175,7 @@ window.db_mixin = (athis, collection)->
           cb()
         catch e
           perr e
-      @dispatch 'db_change'
+      @dispatch "db_change"
     else
       on_end null
       call_later ()=>
@@ -196,6 +196,20 @@ window.db_mixin = (athis, collection)->
     await proxy.load_init defer err; return on_end err if err
     on_end null
     return
+  
+  athis.prototype.load_ref_list = (field, id_list, on_end=->)->
+    if !dbmap_hint = @_dbmap[field]
+      perr "unknown field '#{field}'"
+      return on_end new Error "unknown field '#{field}'"
+    
+    dst_list = @[field]
+    for id in id_list
+      dst_list.push dbmap_hint.factory id
+    
+    for v in dst_list
+      await v.load defer(err); return on_end err if err
+    
+    on_end()
   
   athis.prototype.clone = (on_end)->
     await @serialize defer(err, json); return on_end err if err
