@@ -23,7 +23,7 @@ class window.Ws_request_service
       setInterval ()=>
         now = Date.now()
         for k,v of @response_hash
-          if now - v.timestamp > @timeout
+          if now > v.end_ts
             delete @response_hash[k]
             perr "ws_request_service timeout"
             perr v.callback.toString()
@@ -31,11 +31,11 @@ class window.Ws_request_service
         return
       , @interval
 
-  request : (hash, handler)->
+  request : (hash, handler, opt = {})->
     hash.request_uid = @request_uid++
     @response_hash[hash.request_uid] =
-      callback : handler
-      timestamp : Date.now()
+      callback  : handler
+      end_ts    : Date.now() + opt.timeout or @timeout
     @ws.write hash
     return
 
