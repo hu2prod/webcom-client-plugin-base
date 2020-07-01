@@ -8,14 +8,15 @@ class window.Ws_request_service
 
   constructor : (@ws)->
     @response_hash = {}
-    @ws.on 'data', (data)=>
+    @ws.on "data", (data)=>
       # puts data
       if data.request_uid?
         if @response_hash[data.request_uid]?
           cb = @response_hash[data.request_uid].callback
-          delete @response_hash[data.request_uid] if !data.continious_request
-          delete data.request_uid
-          cb null, data
+          if data.error
+            cb new Error(data.error), data
+          else
+            cb null, data
         else
           perr "missing request_uid = #{data.request_uid}. Possible timeout"
       return
@@ -32,10 +33,20 @@ class window.Ws_request_service
       , @interval
 
   request : (hash, handler, opt = {})->
+    callback = (err, res)=>
+      @ws.off "error", err_handler
+      delete @response_hash[hash.request_uid] if err or !res.continious_request
+      delete res.request_uid if res?
+      handler err, res
+    
+    @ws.once "error", err_handler = (err)=>
+      callback err
+    
     hash.request_uid = @request_uid++
-    @response_hash[hash.request_uid] =
-      callback  : handler
+    @response_hash[hash.request_uid] = {
+      callback
       end_ts    : Date.now() + opt.timeout or @timeout
+    }
     @ws.write hash
     return
 
