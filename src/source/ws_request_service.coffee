@@ -27,7 +27,7 @@ class window.Ws_request_service
           if now > v.end_ts
             delete @response_hash[k]
             perr "ws_request_service timeout"
-            perr v.callback.toString()
+            perr v.callback_orig.toString()
             v.callback new Error "timeout"
         return
       , @interval
@@ -45,6 +45,7 @@ class window.Ws_request_service
     hash.request_uid = @request_uid++
     @response_hash[hash.request_uid] = {
       callback
+      callback_orig : handler
       end_ts    : Date.now() + opt.timeout or @timeout
     }
     @ws.write hash
