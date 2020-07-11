@@ -49,6 +49,6 @@ class window.Ws_request_service
       end_ts    : Date.now() + opt.timeout or @timeout
     }
     @ws.write hash
-    return
+    return hash.request_uid
 
   send : @prototype.request

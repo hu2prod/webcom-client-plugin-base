@@ -51,6 +51,7 @@ class window.Keyboard_switchable_scheme
         continue if !v.opt_ctrl  and v.ctrl  != event.ctrlKey
         continue if !v.opt_shift and v.shift != event.shiftKey
         continue if !v.opt_alt   and v.alt   != event.altKey
+        event.preventDefault() if v.prevent_default
         return v.handler(event)
     return
   
