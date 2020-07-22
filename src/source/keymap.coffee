@@ -148,7 +148,7 @@ class Keymap
     for k,v of Keymap.map
       Keymap.rev_map[v] = k
     for i in [0 .. 9]
-      Keymap.map["num_#{i}"] = Keymap.map["num#{i}"]
+      Keymap.map["num#{i}"] = Keymap.map["num_#{i}"]
     
     for k,v of Keymap.map
       if /^num_/.test k
