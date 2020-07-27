@@ -10,11 +10,13 @@ if window.config_hot_reload
     for k,v of window.framework_style_hash
       style_list.push v
     
-    style_tag = document.getElementsByTagName('style')[0]
+    style_tag = document.getElementsByTagName("style")[0]
+    style_cont = style_list.join "\n"
+    if window.host_patch
+      style_cont = style_cont.replace(/url\(\//g, "url(#{host_patch}/")
     
     try # this can crash under ie6
-      style_tag.innerHTML = style_list.join '
-'
+      style_tag.innerHTML = style_cont
     catch e
       return false
     
@@ -24,14 +26,14 @@ if window.config_hot_reload
   window.hot_reload_event_mixin = new Event_mixin
   
   url_parser = (url)->
-    parser = document.createElement('a');
+    parser = document.createElement("a");
     parser.href = url
     parser
   
   window.hot_reload_websocket ?= new window.Websocket_wrap "#{protocol}//#{location.hostname}:#{config_hot_reload_port}#{location.pathname}"
   window.hot_reload_websocket.on "data", window.hot_reload_handler = (data)->
     return if !autoreload
-    if data.event == 'add' and data.switch != "hotreload_image"
+    if data.event == "add" and data.switch != "hotreload_image"
       location.reload()
     
     switch data.switch
@@ -46,7 +48,7 @@ if window.config_hot_reload
           if window.hot_reload_extension
             {content} = data
             puts "exec #{data.path}"
-            content += "//# sourceURL=${data.path}";
+            content += "//# sourceURL=#{data.path}";
             window.hotreplace = true
             eval content
             window.hotreplace = false
@@ -71,11 +73,11 @@ if window.config_hot_reload
         window.framework_template_hash[data.path] = window.template_preprocess data.content
         hot_reload_event_mixin.dispatch "hotreload_template", data.path
       when "hotreload_image"
-        for img in document.getElementsByTagName('img')
+        for img in document.getElementsByTagName("img")
           url = url_parser(img.src)
           src = url.pathname
-          src = src.replace /^\//, ''
-          data.path = data.path.replace /^\//, ''
+          src = src.replace /^\//, ""
+          data.path = data.path.replace /^\//, ""
           if src == data.path # TOO bad compare
             if url.protocol # full
               img.src = "#{url.protocol}//#{url.host}#{url.pathname}?cache_killer=#{image_uid++}"
