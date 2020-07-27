@@ -5,7 +5,8 @@ protocol = if location.protocol == "http:" then "ws:" else "wss:"
 image_uid = 0
 
 if window.config_hot_reload
-  update_style = ()->
+  update_style_uid = 0
+  update_style = (image_update = false)->
     style_list = []
     for k,v of window.framework_style_hash
       style_list.push v
@@ -14,6 +15,9 @@ if window.config_hot_reload
     style_cont = style_list.join "\n"
     if window.host_patch
       style_cont = style_cont.replace(/url\(\//g, "url(#{host_patch}/")
+    
+    update_style_uid++ if image_update
+    style_cont = style_cont.replace(/url\(([^\)]+)\)/g, "url($1?#{update_style_uid})")
     
     try # this can crash under ie6
       style_tag.innerHTML = style_cont
@@ -83,5 +87,8 @@ if window.config_hot_reload
               loc_img.src = "#{url.protocol}//#{url.host}#{url.pathname}?cache_killer=#{image_uid++}"
             else # simple
               loc_img.src = "#{url.pathname}?cache_killer=#{image_uid++}"
+        
+        if !update_style(true)
+          location.reload()
         
     return
