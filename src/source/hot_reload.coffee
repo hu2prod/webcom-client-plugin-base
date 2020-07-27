@@ -73,15 +73,15 @@ if window.config_hot_reload
         window.framework_template_hash[data.path] = window.template_preprocess data.content
         hot_reload_event_mixin.dispatch "hotreload_template", data.path
       when "hotreload_image"
-        for img in document.getElementsByTagName("img")
-          url = url_parser(img.src)
+        for loc_img in document.getElementsByTagName("img")
+          url = url_parser(loc_img.src)
           src = url.pathname
           src = src.replace /^\//, ""
           data.path = data.path.replace /^\//, ""
           if src == data.path # TOO bad compare
             if url.protocol # full
-              img.src = "#{url.protocol}//#{url.host}#{url.pathname}?cache_killer=#{image_uid++}"
+              loc_img.src = "#{url.protocol}//#{url.host}#{url.pathname}?cache_killer=#{image_uid++}"
             else # simple
-              img.src = "#{url.pathname}?cache_killer=#{image_uid++}"
+              loc_img.src = "#{url.pathname}?cache_killer=#{image_uid++}"
         
     return
