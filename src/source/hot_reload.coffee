@@ -28,7 +28,7 @@ if window.config_hot_reload
     parser.href = url
     parser
   
-  window.hot_reload_websocket = new window.Websocket_wrap "#{protocol}//#{location.hostname}:#{config_hot_reload_port}#{location.pathname}"
+  window.hot_reload_websocket ?= new window.Websocket_wrap "#{protocol}//#{location.hostname}:#{config_hot_reload_port}#{location.pathname}"
   window.hot_reload_websocket.on "data", window.hot_reload_handler = (data)->
     return if !autoreload
     if data.event == 'add' and data.switch != "hotreload_image"
@@ -43,6 +43,15 @@ if window.config_hot_reload
         return if data.start_ts == start_ts
         return if !file_list.has data.path
         if /\.com\.coffee$/.test data.path
+          if window.hot_reload_extension
+            {content} = data
+            puts "exec #{data.path}"
+            content += "//# sourceURL=${data.path}";
+            window.hotreplace = true
+            eval content
+            window.hotreplace = false
+            window.bootstrap?()
+            return
           hot_reload_event_mixin.dispatch "hotreload_com"
           new_script = document.createElement "script"
           window.hotreplace = true
