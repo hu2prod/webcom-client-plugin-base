@@ -152,7 +152,7 @@ window.deep_clone = deep_clone = (obj)->
     for v in obj
       res.push deep_clone v
     return res
-  if _.isObject obj
+  if __.isObject obj
     res = {}
     for k,v of obj
       res[k] = deep_clone v
