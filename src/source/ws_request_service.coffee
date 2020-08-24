@@ -18,7 +18,7 @@ class window.Ws_request_service
           else
             cb null, data
         else
-          perr "missing request_uid = #{data.request_uid}. Possible timeout"
+          perr "missing request_uid = #{data.request_uid}. Possible timeout. switch=#{data.switch}"
       return
     setTimeout ()=>
       setInterval ()=>
