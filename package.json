@@ -19,6 +19,6 @@
   "homepage": "https://github.com/hu2prod/webcom-client-plugin-base#readme",
   "dependencies": {
     "fy": "github:hu2prod/fy",
-    "webcom": "github:hu2prod/webcom"
+    "webcom": "github:hu2prod/webcom#fresh_ws"
   }
 }
