@@ -168,10 +168,7 @@ window.h_count = window.count_h = window.hash_count = window.count_hash = (t)->
 
 window.is_object = (t)-> t == Object(t)
 
-window.obj_set = (dst, src)->
-  for k,v of src
-    dst[k] = v
-  dst
+window.obj_set = Object.assign
 
 window.obj_clear = (t)->
   for k,v of t
@@ -256,7 +253,6 @@ Math.log10?= (t)->Math.log(t)/_log10
 for v in "abs min max sqrt log round ceil floor log2 log10".split " "
   global[v] = Math[v]
 
-
 # ###################################################################################################
 #    MACRO-like
 # ###################################################################################################
@@ -277,11 +273,27 @@ Object.defineProperty global, "__FILE__",
   get: ()->__STACK__[1].getFileName().split("/").slice(-1)[0]
 
 # ###################################################################################################
+#    JSON semi-experimental
+# ###################################################################################################
+JSON.eq = (a,b)->
+  JSON.stringify(a) == JSON.stringify(b)
+
+JSON.ne = (a,b)->
+  JSON.stringify(a) != JSON.stringify(b)
+
+# ###################################################################################################
 #    I hate promises
 # ###################################################################################################
 Promise.prototype.cb = (cb)->
-  @catch (err)=>cb err
-  @then (res)=>cb null, res
-
+  # промисы могут дважды вызвать callback
+  used = false
+  wrap_cb = (err, res)->
+    if !used
+      used = true
+      cb err, res
+    return
+  
+  # только через chaining. Иначе делает фигню
+  @catch((err)=>wrap_cb err).then (res)=>wrap_cb null, res
   
 puts "reload date #{new Date}"
