@@ -49,7 +49,7 @@ class window.Ws_request_service
       hash
       callback
       callback_orig : handler
-      end_ts    : Date.now() + opt.timeout or @timeout
+      end_ts    : Date.now() + (opt.timeout or @timeout)
     }
     @ws.write hash
     return hash.request_uid
