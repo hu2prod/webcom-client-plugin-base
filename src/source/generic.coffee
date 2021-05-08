@@ -258,13 +258,16 @@ for v in "abs min max sqrt log round ceil floor log2 log10".split " "
 # ###################################################################################################
 Object.defineProperty global, "__STACK__",
   get: ()->
-    orig = Error.prepareStackTrace
-    Error.prepareStackTrace = (_, stack)->stack
-    err = new Error
-    Error.captureStackTrace err, arguments.callee
-    stack = err.stack
-    Error.prepareStackTrace = orig
-    stack
+    if Error.captureStackTrace
+      orig = Error.prepareStackTrace
+      Error.prepareStackTrace = (_, stack)->stack
+      err = new Error
+      Error.captureStackTrace err, arguments.callee
+      stack = err.stack
+      Error.prepareStackTrace = orig
+      stack
+    else
+      []
 
 Object.defineProperty global, "__LINE__",
   get: ()->__STACK__[1].getLineNumber()
