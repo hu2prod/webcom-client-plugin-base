@@ -287,16 +287,17 @@ JSON.ne = (a,b)->
 # ###################################################################################################
 #    I hate promises
 # ###################################################################################################
-Promise.prototype.cb = (cb)->
-  # промисы могут дважды вызвать callback
-  used = false
-  wrap_cb = (err, res)->
-    if !used
-      used = true
-      cb err, res
-    return
-  
-  # только через chaining. Иначе делает фигню
-  @catch((err)=>wrap_cb err).then (res)=>wrap_cb null, res
-  
+if global.Promise
+  Promise.prototype.cb = (cb)->
+    # промисы могут дважды вызвать callback
+    used = false
+    wrap_cb = (err, res)->
+      if !used
+        used = true
+        cb err, res
+      return
+    
+    # только через chaining. Иначе делает фигню
+    @catch((err)=>wrap_cb err).then (res)=>wrap_cb null, res
+    
 puts "reload date #{new Date}"
