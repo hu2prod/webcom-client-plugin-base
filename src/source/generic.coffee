@@ -168,7 +168,11 @@ window.h_count = window.count_h = window.hash_count = window.count_hash = (t)->
 
 window.is_object = (t)-> t == Object(t)
 
-window.obj_set = Object.assign
+window.obj_set = Object.assign ?= (a, list...)->
+  for b in list
+    for k,v of b
+      a[k] = v
+  a
 
 window.obj_clear = (t)->
   for k,v of t
