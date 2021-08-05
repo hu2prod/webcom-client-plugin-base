@@ -17,9 +17,21 @@ if window.config_hot_reload
       style_cont = style_cont.replace(/url\(\//g, "url(#{host_patch}/")
     
     update_style_uid++ if image_update
-    style_cont = style_cont.replace(/url\(\"([^"'\)]+)\"\)/g, "url(\"$1?#{update_style_uid}\")")
-    style_cont = style_cont.replace(/url\(\'([^"'\)]+)\'\)/g, "url('$1?#{update_style_uid}')")
-    style_cont = style_cont.replace(/url\(([^"'\)]+)\)/g, "url($1?#{update_style_uid})")
+    style_cont = style_cont.replace /url\(\"([^"'\)]+)\"\)/g, (full,t)->
+      if /^.?data:/.test t
+        full
+      else
+        "url(\"#{t}?#{update_style_uid}\")"
+    style_cont = style_cont.replace /url\(\'([^"'\)]+)\'\)/g, (full,t)->
+      if /^.?data:/.test t
+        full
+      else
+        "url(\'#{t}?#{update_style_uid}\')"
+    style_cont = style_cont.replace /url\(([^"'\)]+)\)/g, (full,t)->
+      if /^.?data:/.test t
+        full
+      else
+        "url(#{t}?#{update_style_uid})"
     
     try # this can crash under ie6
       style_tag.innerHTML = style_cont
