@@ -14,7 +14,7 @@ do (plugin)->
     # Например нам не нужен обязательно такой пиздатый trim
     # $.cookie - требует jquery cookie, потому нужно это как-то поправить
     # там было слишком много регулярок, потому я вынес (дабы не заниматься идиотским экранированием)
-    fs.readFileSync(require.resolve('./source/keymap.coffee'), 'utf-8').replace('### !pragma coverage-skip-block ###\n', '')
+    fs.readFileSync(require.resolve('./source/keymap'), 'utf-8').replace('### !pragma coverage-skip-block ###\n', '')
 # ###################################################################################################
 
 plugin = new Webcom_plugin
@@ -27,5 +27,5 @@ do (plugin)->
     # Например нам не нужен обязательно такой пиздатый trim
     # $.cookie - требует jquery cookie, потому нужно это как-то поправить
     # там было слишком много регулярок, потому я вынес (дабы не заниматься идиотским экранированием)
-    fs.readFileSync(require.resolve('./source/scheme.coffee'), 'utf-8').replace('### !pragma coverage-skip-block ###\n', '')
+    fs.readFileSync(require.resolve('./source/scheme'), 'utf-8').replace('### !pragma coverage-skip-block ###\n', '')
 # ###################################################################################################

@@ -15,5 +15,5 @@ plugin.dependency_list.push 'fy'
 master_registry.plugin_add plugin
 do (plugin)->
   plugin.code_gen = ()->
-    fs.readFileSync(require.resolve('./source/hot_reload.coffee'), 'utf-8').replace('### !pragma coverage-skip-block ###\n', '')
+    fs.readFileSync(require.resolve('./source/hot_reload'), 'utf-8').replace('### !pragma coverage-skip-block ###\n', '')
 # ###################################################################################################

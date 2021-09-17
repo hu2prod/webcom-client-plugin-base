@@ -14,5 +14,5 @@ master_registry.plugin_add plugin
 do (plugin)->
   plugin.code_gen = ()->
     # там было слишком много регулярок, потому я вынес (дабы не заниматься идиотским экранированием)
-    fs.readFileSync(require.resolve('./source/websocket.coffee'), 'utf-8').replace('### !pragma coverage-skip-block ###\n', '')
+    fs.readFileSync(require.resolve('./source/websocket'), 'utf-8').replace('### !pragma coverage-skip-block ###\n', '')
 # ###################################################################################################
