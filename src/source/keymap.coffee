@@ -197,6 +197,9 @@ class Keymap
       res.code    = k
       res_list.push res
     res_list
-  
+    
+  @normalize : (key_name)->
+    Keymap.rev_map[Keymap.map[key_name]]
+
 Keymap.init()
 window.Keymap = Keymap
