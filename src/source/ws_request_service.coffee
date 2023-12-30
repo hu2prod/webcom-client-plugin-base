@@ -39,25 +39,25 @@ class window.Ws_request_service
   delete : ()->
     @is_alive = false
   
-  request : (hash, handler, opt = {})->
+  request : (req, handler, opt = {})->
     err_handler = null
     callback = (err, res)=>
       @ws.off "error", err_handler
-      delete @response_hash[hash.request_uid] if err or !res.continious_request
+      delete @response_hash[req.request_uid] if err or !res.continious_request
       delete res.request_uid if res?
       handler err, res
     
     @ws.once "error", err_handler = (err)=>
       callback err
     
-    hash.request_uid = @request_uid++
-    @response_hash[hash.request_uid] = {
-      hash
+    req.request_uid = @request_uid++
+    @response_hash[req.request_uid] = {
+      req
       callback
       callback_orig : handler
       end_ts    : Date.now() + (opt.timeout or @timeout)
     }
-    @ws.write hash
-    return hash.request_uid
+    @ws.write req
+    return req.request_uid
 
   send : @prototype.request
