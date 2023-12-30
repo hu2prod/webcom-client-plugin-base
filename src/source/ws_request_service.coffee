@@ -6,6 +6,7 @@ class window.Ws_request_service
   interval : 30000
   timeout : 30000
 
+  is_alive : true
   constructor : (@ws)->
     @response_hash = {}
     @ws.on "data", (data)=>
@@ -20,19 +21,24 @@ class window.Ws_request_service
         else
           perr "missing request_uid = #{data.request_uid}. Possible timeout. switch=#{data.switch}"
       return
+    
     setTimeout ()=>
-      setInterval ()=>
+      while @is_alive
         now = Date.now()
         for k,v of @response_hash
           if now > v.end_ts
             delete @response_hash[k]
-            perr "ws_request_service timeout"
-            perr v.hash
-            perr v.callback_orig.toString()
+            if !@quiet
+              perr "ws_request_service timeout"
+              perr v.req
+              perr v.callback_orig.toString()
             v.callback new Error "timeout"
-        return
-      , @interval
-
+        await setTimeout defer(), @interval
+    , 1
+  
+  delete : ()->
+    @is_alive = false
+  
   request : (hash, handler, opt = {})->
     err_handler = null
     callback = (err, res)=>
