@@ -3,7 +3,7 @@ class window.Ws_request_service
   ws : null
   request_uid : 0
   response_hash : {}
-  interval : 30000
+  interval : 1000
   timeout : 30000
 
   is_alive : true
